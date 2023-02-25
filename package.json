@@ -1,0 +1,11 @@
+{
+  "name": "electron-helloworld",
+  "version": "1.0.0",
+  "description": "electron-helloworld",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Joey",
+  "license": "ISC"
+}
