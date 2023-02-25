@@ -10,7 +10,7 @@ let mainWindow;
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 1000,
     webPreferences: {
       nodeIntegration: true
     }
@@ -21,20 +21,23 @@ server.use('/', createProxyMiddleware({
   target: 'http://127.0.0.1:5000',
   changeOrigin: true,
   pathRewrite: {
-    '^/': '/hello'
+    '^/': '/messages'
   }
 }));
+
 
 // 监听端口号
 server.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile('iphone-msg.html');
 
   mainWindow.on('closed', function () {
     mainWindow = null;
   });
+
+
 }
 
 app.on('ready', createWindow);

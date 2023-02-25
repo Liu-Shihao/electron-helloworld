@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>ChatBot</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+
+      }
+
+      body {
+        background-color: #f3f3f3;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        padding: 20px;
+      }
+
+      .message-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .message-list li {
+        clear: both;
+        margin: 10px 0;
+        overflow: hidden;
+        padding: 10px;
+      }
+
+      .message-list li.sent {
+        background-color: #dcf8c6;
+        border-radius: 10px 10px 0 10px;
+        float: right;
+        margin-right: 10%;
+        max-width: 60%;
+        text-align: right;
+      }
+
+      .message-list li.received {
+        background-color: #fff;
+        border-radius: 10px 10px 10px 0;
+        float: left;
+        margin-left: 10%;
+        max-width: 60%;
+        text-align: left;
+      }
+
+      .message-list li .message {
+        font-size: 16px;
+        margin: 5px 0;
+      }
+
+      .message-list li .time {
+        color: #999;
+        font-size: 12px;
+        text-align: right;
+      }
+
+      .bottom-bar {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        height: 80px; /* 设置高度 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f5f5;
+        padding: 20px; /* 添加 padding */
+      }
+      #message-form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 80%;
+      }
+
+      #message-form input[type="text"] {
+        flex: 1;
+        margin-right: 10px; /* 添加 margin */
+        height: 40px;
+        font-size: 16px;
+        padding: 10px;
+        border: none;
+        border-radius: 20px;
+        outline: none;
+      }
+
+      #message-form input[type="submit"] {
+        height: 40px;
+        font-size: 16px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 20px;
+        outline: none;
+        color: #fff;
+        cursor: pointer;
+        background-color: #4285f4;
+        margin-left: 20px;
+        text-align: center;
+        text-decoration: none;
+      }
+
+      .message-input input[type="submit"]:hover {
+        background-color: #0d47a1;
+      }
+    </style>
+  </head>
+  <body>
+
+    <ul class="message-list">
+      <li class="received">
+        <div class="message">你好啊！有什么可以帮助您的？</div>
+        <div class="time">2023-02-26 09:30</div>
+      </li>
+    </ul>
+    <div class="bottom-bar">
+      <form id="message-form" class="message-input">
+        <input class="message-input" type="text" name="message" placeholder="输入消息...">
+        <input class="message-input" type="submit" value="发送">
+      </form>
+    </div>
+<script>
+  const form = document.querySelector('#message-form');
+  const messageList = document.querySelector('.message-list');
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const input = form.querySelector('input[type="text"]');
+    const message = input.value.trim();
+    if (message === '') {
+      return;
+    }
+    const li1 = document.createElement('li');
+    li1.classList.add('sent');
+    li1.innerHTML = `
+      <div class="message">${message}</div>
+      <div class="time">${getCurrentTime()}</div>
+    `;
+    messageList.appendChild(li1);
+    input.value = '';
+    console.log('发起请求');
+    $.ajax({
+
+          type: 'POST',
+          url: 'http://127.0.0.1:5000/messages',
+          data: JSON.stringify(message),
+          contentType: 'application/json',
+
+          success: function(response) {
+            console.log('提交成功');
+            console.log(response);
+            // var data = JSON.parse(response);
+            var text = response.response;
+            console.log(text);
+            const li2 = document.createElement('li');
+            li2.classList.add('received');
+            li2.innerHTML = `
+              <div class="message">${text}</div>
+              <div class="time">${getCurrentTime()}</div>
+            `;
+            messageList.appendChild(li2);
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            console.log('提交失败');
+            console.log(xhr.responseText);
+          }
+        });
+  });
+
+  function getCurrentTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = ('0' + (now.getMonth() + 1)).slice(-2);
+    const date = ('0' + now.getDate()).slice(-2);
+    const hours = ('0' + now.getHours()).slice(-2);
+    const minutes = ('0' + now.getMinutes()).slice(-2);
+    return `${year}-${month}-${date} ${hours}:${minutes}`;
+  }
+</script>
+  </body>
+</html>
